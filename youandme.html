@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+    <title>you&me</title>
+</head>
+<body>    
+    <table id="me">
+        <thead>
+            <tr>
+                <th>Me</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>质量(weight)</td>
+                <td><input type="text" id="mg1" name="mg1" value="70">kg</td>
+            </tr>
+            <tr>
+                <td>经度(longitude)</td>
+                <td><input type="text" id="lng1" name="lng1" value="114.933472">E</td>
+            </tr>
+            <tr>
+                <td>纬度(latitude)</td>
+                <td><input type="text" id="lat1" name="lat1" value="30.447934">N</td>
+            </tr>
+        </tbody>
+    </table id="you">
+    <table>
+        <thead>
+            <tr>
+                <th>You</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>质量(weight) </td>
+                <td><input type="text" id="mg2" name="mg2" value="55">kg</td>
+            </tr>
+            <tr>
+                <td>经度(longitude) </td>
+                <td><input type="text" id="lng2" name="lng2" value="121.442828">E</td>
+            </tr>
+            <tr>
+                <td>纬度(latitude)</td>
+                <td><input type="text" id="lat2" name="lat2" value="31.037381">N</td>
+            </tr>
+        </tbody>
+    </table>
+   <!--  me:31.037381N,121.442828E
+    you:30.447934N,114.933472E -->
+    <div id="btn">
+    <input type="button" value="计算" onclick ="calc();">
+    </div>
+    <table id="result">
+        <tbody>
+            <tr>
+                <td>你和我的球面距离是(distance)</td>
+                <td> <input type="text" id="rdis" name="rdis" value=""> m</td>
+            </tr>
+            <tr>
+                <td>你和我的直线距离是(distance)</td>
+                <td> <input type="text" id="sdis" name="sdis" value=""> m</td>
+            </tr>
+            <tr>
+                <td>你对我的万有引力是(gravity)</td>
+                <td><input type="text" id="gravity" name="gravity" value=""> N</td>
+            </tr>
+        </tbody>
+    </table>
+    
+<script type="text/javascript">
+
+    function calc () {
+        // 参数
+        var mg1  = document.getElementById('mg1').value;
+        var lng1 = document.getElementById('lng1').value;
+        var lat1 = document.getElementById('lat1').value;
+        var mg2  = document.getElementById('mg2').value;
+        var lng2 = document.getElementById('lng2').value;
+        var lat2 = document.getElementById('lat2').value;
+        var dis = distanceByLnglat(lng1,lat1,lng2,lat2);
+        // 球面距离
+        document.getElementById('rdis').value = Math.round(dis[0]);
+        // 直线距离
+        document.getElementById('sdis').value = Math.round(dis[1]);
+        // 引力
+        g = gravitybymg(mg1,mg2,sdis);
+        document.getElementById('gravity').value = g;
+    }
+    function distanceByLnglat(lng1,lat1,lng2,lat2)
+    {
+        // 计算两点间球面距离
+        var radLat1 = Rad(lat1);
+        var radLat2 = Rad(lat2);
+        var a       = radLat1 - radLat2;
+        var b       = Rad(lng1) - Rad(lng2);
+        var theta = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+        radius = theta * 6378137.0;// 取WGS84标准参考椭球中的地球长半径(单位:m)
+        rdis = Math.round( radius * 10000 ) / 10000;
+        // 计算两点间直线距离
+        sdis = 2 * Math.sin( theta * 180 / Math.PI / 2 ) * radius;
+        // 输出
+        var dis=[rdis,sdis];
+        return dis; 
+    }
+    function gravitybymg (mg1,mg2,dis) {
+        G = 6.67e-11;
+        gravity = G * mg1 * mg2 / Math.pow(dis,2);
+        // alert(gravity);
+        return gravity;
+    }
+    function Rad(d)
+    {
+        return d * Math.PI / 180.0;
+    }
+</script>
+</body>
+</html>
